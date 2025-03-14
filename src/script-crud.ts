@@ -46,6 +46,13 @@ const andamentoDaTarefa = (estado: EstadoAplicacao) => {
     ) ? `${estado.tarefaSelecionada?.descricao}` : 'Nenhuma tarefa em andamento';
 }
 
+const editaTarefa = (descricao: string) => {
+    if (estadoInicial.tarefaSelecionada?.descricao === descricao) {
+        return
+    }
+
+}
+
 // atualizar User Interface
 const atualizarUI = () => {
     const taskIconSvg = `
@@ -63,6 +70,8 @@ const atualizarUI = () => {
     const formAdicionarTarefa = document.querySelector<HTMLFormElement>('.app__form-add-task');
     const textArea = document.querySelector<HTMLTextAreaElement>('.app__form-textarea');
     let emAndamento = document.querySelector<HTMLParagraphElement>(".app__section-active-task-description");
+    const btnCancelar = document.querySelector<HTMLButtonElement>(".app__form-footer__button--cancel");
+    const btnDeletar = document.querySelector<HTMLButtonElement>(".app__form-footer__button--delete");
 
     if (!btnAdicionarTarefa) {
         throw Error('Botão de adicionar tarefa não encontrado');
@@ -106,7 +115,7 @@ const atualizarUI = () => {
         button.appendChild(editIcon)
 
         if (tarefa.concluida) {
-            button.setAttribute('disabled', 'true')
+            // button.setAttribute('disabled', 'false')
             li.classList.add('app__section-task-list-item-complete')
         }
 
@@ -125,11 +134,34 @@ const atualizarUI = () => {
             e.preventDefault();
             formAdicionarTarefa?.classList.toggle('hidden');
             textArea!.value = tarefa.descricao;
+            const editar = editaTarefa(tarefa.descricao);
             // const novaTarefa = textArea!.value;
             // if(novaTarefa !== tarefa.descricao) {
             //     tarefa.descricao = novaTarefa;    
             // }
             
+        })
+
+        btnCancelar!.addEventListener('click', (e) => {
+            e.preventDefault();
+            formAdicionarTarefa?.classList.add('hidden');
+        });
+
+        btnDeletar!.addEventListener('click', (e) => {
+            e.preventDefault();
+            // if (estadoInicial.tarefaSelecionada && estadoInicial.tarefaSelecionada.concluida) {
+            //     estadoInicial.tarefas = estadoInicial.tarefas.filter(tarefa => tarefa === estadoInicial.tarefaSelecionada)
+            //     estadoInicial.tarefaSelecionada = null
+            // }
+            if (estadoInicial.tarefaSelecionada) {
+                if (estadoInicial.tarefaSelecionada.concluida) {
+                    estadoInicial.tarefas = estadoInicial.tarefas.filter(tarefa => tarefa !== estadoInicial.tarefaSelecionada);
+                    estadoInicial.tarefaSelecionada = null;
+                } else {
+                    alert('A tarefa selecionada não está concluída. Por favor, conclua-a antes de removê-la.');
+                }
+            }
+            atualizarUI();
         })
 
         ulTarefas?.appendChild(li)
