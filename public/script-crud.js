@@ -32,6 +32,12 @@ const andamentoDaTarefa = (estado) => {
     var _a;
     return estado.tarefas.find(tarefa => tarefa === estado.tarefaSelecionada) ? `${(_a = estado.tarefaSelecionada) === null || _a === void 0 ? void 0 : _a.descricao}` : 'Nenhuma tarefa em andamento';
 };
+const editaTarefa = (descricao) => {
+    var _a;
+    if (((_a = estadoInicial.tarefaSelecionada) === null || _a === void 0 ? void 0 : _a.descricao) === descricao) {
+        return;
+    }
+};
 // atualizar User Interface
 const atualizarUI = () => {
     const taskIconSvg = `
@@ -48,6 +54,8 @@ const atualizarUI = () => {
     const formAdicionarTarefa = document.querySelector('.app__form-add-task');
     const textArea = document.querySelector('.app__form-textarea');
     let emAndamento = document.querySelector(".app__section-active-task-description");
+    const btnCancelar = document.querySelector(".app__form-footer__button--cancel");
+    const btnDeletar = document.querySelector(".app__form-footer__button--delete");
     if (!btnAdicionarTarefa) {
         throw Error('Botão de adicionar tarefa não encontrado');
     }
@@ -80,7 +88,7 @@ const atualizarUI = () => {
         editIcon.setAttribute('src', '../imagens/edit.png');
         button.appendChild(editIcon);
         if (tarefa.concluida) {
-            button.setAttribute('disabled', 'true');
+            // button.setAttribute('disabled', 'false')
             li.classList.add('app__section-task-list-item-complete');
         }
         li.appendChild(svgIcon);
@@ -96,10 +104,32 @@ const atualizarUI = () => {
             e.preventDefault();
             formAdicionarTarefa === null || formAdicionarTarefa === void 0 ? void 0 : formAdicionarTarefa.classList.toggle('hidden');
             textArea.value = tarefa.descricao;
+            const editar = editaTarefa(tarefa.descricao);
             // const novaTarefa = textArea!.value;
             // if(novaTarefa !== tarefa.descricao) {
             //     tarefa.descricao = novaTarefa;    
             // }
+        });
+        btnCancelar.addEventListener('click', (e) => {
+            e.preventDefault();
+            formAdicionarTarefa === null || formAdicionarTarefa === void 0 ? void 0 : formAdicionarTarefa.classList.add('hidden');
+        });
+        btnDeletar.addEventListener('click', (e) => {
+            e.preventDefault();
+            // if (estadoInicial.tarefaSelecionada && estadoInicial.tarefaSelecionada.concluida) {
+            //     estadoInicial.tarefas = estadoInicial.tarefas.filter(tarefa => tarefa === estadoInicial.tarefaSelecionada)
+            //     estadoInicial.tarefaSelecionada = null
+            // }
+            if (estadoInicial.tarefaSelecionada) {
+                if (estadoInicial.tarefaSelecionada.concluida) {
+                    estadoInicial.tarefas = estadoInicial.tarefas.filter(tarefa => tarefa !== estadoInicial.tarefaSelecionada);
+                    estadoInicial.tarefaSelecionada = null;
+                }
+                else {
+                    alert('A tarefa selecionada não está concluída. Por favor, conclua-a antes de removê-la.');
+                }
+            }
+            atualizarUI();
         });
         ulTarefas === null || ulTarefas === void 0 ? void 0 : ulTarefas.appendChild(li);
     });
